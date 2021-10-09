@@ -2,21 +2,36 @@
 from django.utils import timezone
 from django.db import models
 from django.urls import reverse
+
+#from django.template.defaultfilters import slugify
 # Create your models here.
 # mysite /urls.py
+
 class Category(models.Model):
     category = models.CharField(u'Категорія',max_length=250, help_text=u'Максимум 250 символів')
     slug = models.SlugField(u'Слаг')
+    objects = models.Manager()
+
     class Meta:
         verbose_name = u'Категорія для публікації'
         verbose_name_plural = u'Категорії для публікацій'
+
     def __str__(self):
         return self.category
+
+    def get_absolute_url(self):
+        try:
+            url = reverse('articles-category-list', kwargs={'slug': self.category})
+        except Exception as e:
+            print(e)
+            url = "/"
+        return url
+
 
 class Article(models.Model):
      title = models.CharField(u'Заголовок', max_length=250, help_text=u'Максимум 250 символів')
      description = models.TextField(blank=True, verbose_name=u'Опис')
-     pub_date = models.DateTimeField(u'Дата публікації',default=timezone.now)
+     pub_date = models.DateTimeField(u'Дата публікації',auto_now=True)
      slug = models.SlugField(u'Слаг', unique_for_date='pub_date')
      main_page = models.BooleanField(u'Головна', default = False,help_text = u'Показувати на головній сторінці')
      category = models.ForeignKey(Category,related_name='articles', blank = True, null = True,verbose_name = u'Категорія', on_delete = models.CASCADE)
@@ -40,7 +55,7 @@ class Article(models.Model):
         })
         except:
             url = "/"
-            return url
+        return url
 
 class ArticleImage(models.Model):
     article = models.ForeignKey(Article,verbose_name=u'Стаття',related_name='images', on_delete=models.CASCADE)

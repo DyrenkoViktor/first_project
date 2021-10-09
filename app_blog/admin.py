@@ -4,8 +4,9 @@ from .models import Article, ArticleImage, Category
 from .forms import ArticleImageForm
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('category',)
-    fieldsets = (('', {'fields': ('category', ), }),)
+    prepopulated_fields = {'slug': ('category',)}
+    list_display = ('category','slug',)
+    fieldsets = (('', {'fields': ('category', 'slug', ), }),)
 
 admin.site.register(Category, CategoryAdmin)
 
@@ -16,13 +17,14 @@ class ArticleImageInline(admin.TabularInline):
     fieldsets = (('', {'fields': ('title', 'image',),}), )
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'pub_date', 'slug', 'main_page')
+    readonly_fields = ('pub_date',)
+    list_display = ('title', 'pub_date', 'slug', 'main_page', 'category')
     inlines = [ArticleImageInline]
     multiupload_form = True
     multiupload_list = False
     prepopulated_fields = {'slug': ('title',)}
     raw_id_fields = ('category',)
-    fieldsets = (('', {'fields': ('pub_date', 'title', 'description','main_page'),}),((u'Додатково'), {'classes': ('grp-collapse grp-closed',), 'fields': ('slug',), }), )
+    fieldsets = (('', {'fields': ('pub_date', 'title', 'description','main_page','category'),}),((u'Додатково'), {'classes': ('grp-collapse grp-closed',), 'fields': ('slug',), }), )
 
     def delete_file(self, pk, request):
         '''Delete
