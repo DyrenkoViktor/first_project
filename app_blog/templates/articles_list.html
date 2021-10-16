@@ -5,6 +5,11 @@
     <title>Публікації</title>
 </head>
 <body>
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% spaceless %}
+
  Публікації <br/>
  {% if category %} {{ category }} {% endif %}
  {% for item in items %}
@@ -30,5 +35,7 @@
  <div class='clearfix'></div>
  </div>
  {% endfor %}
+{% endspaceless %}
+{% endblock %}
 </body>
 </html>
